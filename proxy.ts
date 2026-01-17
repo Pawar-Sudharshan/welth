@@ -1,16 +1,19 @@
-// proxy.ts or middleware.ts
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
 const isPublicRoute = createRouteMatcher([
   "/",
   "/sign-in(.*)",
   "/sign-up(.*)",
+  "/dashboard/public(.*)",
+  "/transactions/public(.*)",
 ]);
 
-export default clerkMiddleware((auth, req) => {
-  if (!isPublicRoute(req)) {
-    auth.protect();
+export default clerkMiddleware(async (auth, req) => {
+  if (isPublicRoute(req)) {
+    return;
   }
+
+  const { userId } = await auth.protect();
 });
 
 export const config = {
