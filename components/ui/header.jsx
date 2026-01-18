@@ -58,7 +58,8 @@ const Header = () => {
                 type="button"
                 className="border border-[#6c47ff] text-[#6c47ff] rounded-full font-medium text-sm sm:text-base h-9 sm:h-10 px-4 sm:px-5 cursor-pointer hover:bg-[#6c47ff] hover:text-white transition-colors"
               >
-                Login
+                <span className="hidden md:inline ">Login</span>
+                
               </button>
             </SignInButton>
           </SignedOut>
@@ -68,7 +69,7 @@ const Header = () => {
             <UserButton
               appearance={{
                 elements: {
-                  avatarBox: "w-8 h-8 sm:w-9 sm:h-9",
+                  avatarBox: "w-10 h-10 sm:w-9 h-9"
                 },
               }}
             />
