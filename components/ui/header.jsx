@@ -1,11 +1,13 @@
-import React from "react";
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
-import Image from "next/image";
-import Link from "next/link";
-import { LayoutDashboard, PenBox } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import React from "react"
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs"
+import Image from "next/image"
+import Link from "next/link"
+import { LayoutDashboard, PenBox } from "lucide-react"   // 👈 remove UserCheck icon for now
+import { Button } from "@/components/ui/button"
+import { checkUser } from "@/lib/checkUser"              // 👈 correct import
 
-const Header = () => {
+const Header = async () => {
+  await checkUser()                                    
   return (
     <header className="fixed top-0 w-full bg-white/80 backdrop-blur-md border-b border-gray-200 z-50">
       <nav className="container mx-auto flex items-center justify-between px-4 sm:px-6 lg:px-8 h-16">
@@ -22,7 +24,6 @@ const Header = () => {
 
         {/* Right side actions */}
         <div className="flex items-center space-x-3 sm:space-x-4">
-          {/* Dashboard */}
           <SignedIn>
             <Link
               href="/dashboard"
@@ -38,7 +39,6 @@ const Header = () => {
             </Link>
           </SignedIn>
 
-          {/* Add Transaction */}
           <SignedIn>
             <Link
               href="/transactions/create"
@@ -51,25 +51,22 @@ const Header = () => {
             </Link>
           </SignedIn>
 
-          {/* Login */}
           <SignedOut>
             <SignInButton mode="modal" forceRedirectUrl="/dashboard">
               <button
                 type="button"
                 className="border border-[#6c47ff] text-[#6c47ff] rounded-full font-medium text-sm sm:text-base h-9 sm:h-10 px-4 sm:px-5 cursor-pointer hover:bg-[#6c47ff] hover:text-white transition-colors"
               >
-                <span className="hidden md:inline ">Login</span>
-                
+                <span className="hidden md:inline">Login</span>
               </button>
             </SignInButton>
           </SignedOut>
 
-          {/* User avatar */}
           <SignedIn>
             <UserButton
               appearance={{
                 elements: {
-                  avatarBox: "w-10 h-10 sm:w-9 h-9"
+                  avatarBox: "w-10 h-10 sm:w-9 h-9",
                 },
               }}
             />
@@ -77,7 +74,7 @@ const Header = () => {
         </div>
       </nav>
     </header>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

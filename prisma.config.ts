@@ -1,14 +1,10 @@
 // prisma.config.ts
-import "dotenv/config";
-import { defineConfig } from "prisma/config";
+import "dotenv/config"
+import { defineConfig, env } from "prisma/config"
 
 export default defineConfig({
   schema: "prisma/schema.prisma",
-  migrations: {
-    path: "prisma/migrations",
-  },
   datasource: {
-    // Use DIRECT_URL for Supabase migrations (5432)
-    url: process.env["DIRECT_URL"],
+    url: env("DIRECT_URL"),
   },
-});
+})
