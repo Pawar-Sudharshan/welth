@@ -27,7 +27,7 @@ export default function RootLayout({
           </main>
           <footer className="bg-blue-50 py-12">
             <div className="container mx-auto px-4 text-center text-gray-600">
-              <p>made with love by Sudharshan</p>
+              <p>Made with 💗 by Sudharshan</p>
             </div>
           </footer>
         </body>
