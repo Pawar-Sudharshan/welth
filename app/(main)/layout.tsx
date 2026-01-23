@@ -1,7 +1,11 @@
-import React, { ReactNode } from 'react'
+import React, { ReactNode } from 'react';
 
 export const MainLayout = ({ children }: { children: ReactNode }) => {
   return (
-    <div className="container max-auto my-32">{children}</div>
-  )
-}
+    <div className="container mx-auto px-4">
+      {children}
+    </div>
+  );
+};
+
+export default MainLayout;
