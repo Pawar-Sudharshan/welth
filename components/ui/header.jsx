@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { checkUser } from "@/lib/checkUser"              // 👈 correct import
 
 const Header = async () => {
-  await checkUser()                                    
+  await checkUser()
   return (
     <header className="fixed top-0 w-full bg-white/80 backdrop-blur-md border-b border-gray-200 z-50">
       <nav className="container mx-auto flex items-center justify-between px-4 sm:px-6 lg:px-8 h-16">
@@ -41,7 +41,7 @@ const Header = async () => {
 
           <SignedIn>
             <Link
-              href="/transactions/create"
+              href="/transaction/create"
               className="text-gray-600 hover:text-[#6c47ff] flex items-center gap-2 transition-colors"
             >
               <Button className="border border-[#6c47ff] text-[#6c47ff] hover:bg-[#6c47ff] hover:text-white flex items-center gap-2">
