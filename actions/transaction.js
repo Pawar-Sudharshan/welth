@@ -7,6 +7,13 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import aj from "@/lib/arcjet";
 import { request } from "@arcjet/next";
 
+// open ai
+import OpenAI from "openai";
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const serializeAmount = (obj) => ({
@@ -230,63 +237,43 @@ export async function getUserTransactions(query = {}) {
 // Scan Receipt
 export async function scanReceipt(file) {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-    // Convert File to ArrayBuffer
     const arrayBuffer = await file.arrayBuffer();
-    // Convert ArrayBuffer to Base64
     const base64String = Buffer.from(arrayBuffer).toString("base64");
 
-    const prompt = `
-      Analyze this receipt image and extract the following information in JSON format:
-      - Total amount (just the number)
-      - Date (in ISO format)
-      - Description or items purchased (brief summary)
-      - Merchant/store name
-      - Suggested category (one of: housing,transportation,groceries,utilities,entertainment,food,shopping,healthcare,education,personal,travel,insurance,gifts,bills,other-expense )
-      
-      Only respond with valid JSON in this exact format:
-      {
-        "amount": number,
-        "date": "ISO date string",
-        "description": "string",
-        "merchantName": "string",
-        "category": "string"
-      }
-
-      If its not a recipt, return an empty object
-    `;
-
-    const result = await model.generateContent([
-      {
-        inlineData: {
-          data: base64String,
-          mimeType: file.type,
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o-mini", // Very cheap and excellent at OCR
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: "Analyze this receipt image and extract the following in JSON: amount (number), date (ISO string), description (brief summary), merchantName (string), and category (one of: housing, transportation, groceries, utilities, entertainment, food, shopping, healthcare, education, personal, travel, insurance, gifts, bills, other-expense). Respond only with the JSON object.",
+            },
+            {
+              type: "image_url",
+              image_url: {
+                url: `data:${file.type};base64,${base64String}`,
+              },
+            },
+          ],
         },
-      },
-      prompt,
-    ]);
+      ],
+      response_format: { type: "json_object" }, // Ensures valid JSON output
+    });
 
-    const response = await result.response;
-    const text = response.text();
-    const cleanedText = text.replace(/```(?:json)?\n?/g, "").trim();
+    const data = JSON.parse(response.choices[0].message.content);
 
-    try {
-      const data = JSON.parse(cleanedText);
-      return {
-        amount: parseFloat(data.amount),
-        date: new Date(data.date),
-        description: data.description,
-        category: data.category,
-        merchantName: data.merchantName,
-      };
-    } catch (parseError) {
-      console.error("Error parsing JSON response:", parseError);
-      throw new Error("Invalid response format from Gemini");
-    }
+    return {
+      amount: parseFloat(data.amount) || 0,
+      date: data.date ? new Date(data.date) : new Date(),
+      description: data.description || "",
+      category: data.category || "other-expense",
+      merchantName: data.merchantName || "Unknown Merchant",
+    };
   } catch (error) {
-    console.error("Error scanning receipt:", error);
-    throw new Error("Failed to scan receipt");
+    console.error("OpenAI Scan Error:", error);
+    throw new Error("Failed to scan receipt with ChatGPT: " + error.message);
   }
 }
 
