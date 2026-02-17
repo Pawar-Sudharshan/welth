@@ -8,6 +8,7 @@ import {
   triggerRecurringTransactions,
 } from "@/lib/inngest/function";
 
+
 export const { GET, POST, PUT } = serve({
   client: inngest,
   functions: [
