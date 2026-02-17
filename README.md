@@ -7,7 +7,7 @@ Welth is a modern, AI-powered personal finance and budget tracking application b
 ## 🚀 Live Application
 
 **Production URL:**
-[https://welth-ruddy-seven.vercel.app](https://welth-ruddy-seven.vercel.app)
+[https://welth.vercel.app](https://welthtrack.vercel.app/)
 
 ---
 
