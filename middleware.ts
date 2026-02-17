@@ -1,22 +1,49 @@
+import arcjet, { createMiddleware, detectBot, shield } from "@arcjet/next";
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
 
-const isPublicRoute = createRouteMatcher([
-  "/",
-  "/sign-in(.*)",
-  "/sign-up(.*)",
-  "/dashboard/public(.*)",
-  "/transactions/public(.*)",
-  "/api/inngest(.*)",
+// ✅ Validate environment variable properly
+if (!process.env.ARCJET_KEY) {
+  throw new Error("❌ ARCJET_KEY is not defined in environment variables");
+}
+
+const isProtectedRoute = createRouteMatcher([
+  "/dashboard(.*)",
+  "/account(.*)",
+  "/transaction(.*)",
 ]);
 
+// ✅ Create Arcjet middleware
+const aj = arcjet({
+  key: process.env.ARCJET_KEY, // Now guaranteed to be string
+  rules: [
+    shield({
+      mode: "LIVE",
+    }),
+    detectBot({
+      mode: "LIVE",
+      allow: [
+        "CATEGORY:SEARCH_ENGINE",
+        "GO_HTTP",
+      ],
+    }),
+  ],
+});
 
-export default clerkMiddleware(async (auth, req) => {
-  if (isPublicRoute(req)) {
-    return;
+// ✅ Create Clerk middleware
+const clerk = clerkMiddleware(async (auth, req) => {
+  const { userId } = await auth();
+
+  if (!userId && isProtectedRoute(req)) {
+    const { redirectToSignIn } = await auth();
+    return redirectToSignIn();
   }
 
-  const { userId } = await auth.protect();
+  return NextResponse.next();
 });
+
+// ✅ Chain middlewares (Arcjet → Clerk)
+export default createMiddleware(aj, clerk);
 
 export const config = {
   matcher: [
