@@ -8,7 +8,7 @@ import {
   triggerRecurringTransactions,
   generateMonthlyReports,
   checkBudgetAlerts,
-} from "@/lib/inngest/functions"; // adjust if needed
+} from "@/lib/inngest/function"; // adjust if needed
 
 // -----------------------------------------------------------------------------
 // Validate Environment Variable
